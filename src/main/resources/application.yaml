@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: NeonAi
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/lovableDB
+    username: postgres
+    password: 960494
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
