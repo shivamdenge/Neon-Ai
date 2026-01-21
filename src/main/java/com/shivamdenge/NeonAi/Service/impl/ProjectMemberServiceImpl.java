@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -33,24 +32,17 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     public List<MemberResponseDTo> getProjectMembers(Long projectId, Long userId) {
         Project project = getAccessibleProjectById(projectId, userId);
 
-        List<MemberResponseDTo> memberResponseList = new ArrayList<>();
-        //Here We Added Owner Because Owner is also part of project
-        memberResponseList.add(projectMemberMapper.toProjectMemberResponseFromOwner(project.getOwner()));
-
-        memberResponseList.addAll(projectMemberRepository.findByIdProjectId(projectId).stream().map(projectMemberMapper::toProjectMemberResponseFromMember).toList());
-
-        return memberResponseList;
+        return projectMemberRepository.findByIdProjectId(projectId).stream()
+                .map(projectMemberMapper::toProjectMemberResponseFromMember).toList();
     }
 
     @Override
     public MemberResponseDTo inviteMember(Long projectId, InviteMemberRequestDTO request, Long userId) {
 
         Project project = getAccessibleProjectById(projectId, userId);
-        if (!project.getOwner().getId().equals(userId)) {
-            throw new RuntimeException("Not Allowed");
-        }
 
-        User invitee = userRepository.findByEmail(request.email()).orElseThrow();
+
+        User invitee = userRepository.findByUsername(request.username()).orElseThrow();
 
         if (invitee.getId().equals(userId)) {
             throw new RuntimeException("Cannot invite yourself");
@@ -74,9 +66,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 
         Project project = getAccessibleProjectById(projectId, userId);
 
-        if (!project.getOwner().getId().equals(userId)) {
-            throw new RuntimeException("Not Allowed");
-        }
+
 
         ProjectMemberId projectMemberId = new ProjectMemberId(projectId, memberId);
         ProjectMember projectMember = projectMemberRepository.findById(projectMemberId).orElseThrow();
@@ -94,9 +84,6 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 
         Project project = getAccessibleProjectById(projectId, userId);
 
-        if (!project.getOwner().getId().equals(userId)) {
-            throw new RuntimeException("Not Allowed");
-        }
 
         ProjectMemberId projectMemberId = new ProjectMemberId(projectId, memberId);
 
@@ -109,7 +96,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 
     /// INTERNAL FUNCTION
 
-    public Project getAccessibleProjectById(Long id, Long userId) {
-        return projectRepository.findAccessibleByProjectId(id, userId).orElseThrow();
+    public Project getAccessibleProjectById(Long projectId, Long userId) {
+        return projectRepository.findAccessibleByProjectId(projectId, userId).orElseThrow();
     }
 }

@@ -4,6 +4,7 @@ import com.shivamdenge.NeonAi.Service.ProjectService;
 import com.shivamdenge.NeonAi.dto.project.ProjectRequestDTO;
 import com.shivamdenge.NeonAi.dto.project.ProjectResponseDTO;
 import com.shivamdenge.NeonAi.dto.project.ProjectSummaryResponseDTO;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,13 +33,13 @@ public class ProjectController {
     }
 
     @PostMapping
-    public ResponseEntity<ProjectResponseDTO> createProject(@RequestBody ProjectRequestDTO requestDTO) {
+    public ResponseEntity<ProjectResponseDTO> createProject(@RequestBody @Valid ProjectRequestDTO requestDTO) {
         Long userId = 1L;
         return ResponseEntity.status(HttpStatus.CREATED).body(projectService.createProject(userId, requestDTO));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ProjectResponseDTO> updateProject(@PathVariable Long id, @RequestBody ProjectRequestDTO requestDTO) {
+    public ResponseEntity<ProjectResponseDTO> updateProject(@PathVariable Long id, @RequestBody @Valid ProjectRequestDTO requestDTO) {
         Long userId = 1L;
         return ResponseEntity.ok(projectService.updateProject(id, userId, requestDTO));
     }

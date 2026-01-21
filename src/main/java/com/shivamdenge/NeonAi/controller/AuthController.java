@@ -6,6 +6,7 @@ import com.shivamdenge.NeonAi.dto.auth.AuthResponseDTO;
 import com.shivamdenge.NeonAi.dto.auth.LoginRequestDTO;
 import com.shivamdenge.NeonAi.dto.auth.SignupRequestDTO;
 import com.shivamdenge.NeonAi.dto.auth.UserProfileResponseDTO;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,12 +20,12 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<AuthResponseDTO> signup(@RequestBody SignupRequestDTO requestDTO) {
+    public ResponseEntity<AuthResponseDTO> signup(@RequestBody @Valid SignupRequestDTO requestDTO) {
         return ResponseEntity.ok(authService.signup(requestDTO));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginRequestDTO requestDTO) {
+    public ResponseEntity<AuthResponseDTO> login(@RequestBody @Valid LoginRequestDTO requestDTO) {
         return ResponseEntity.ok(authService.login(requestDTO));
     }
 

@@ -1,7 +1,9 @@
 package com.shivamdenge.NeonAi.dto.project;
 
 
+import jakarta.validation.constraints.NotBlank;
+
 public record ProjectRequestDTO(
-        String name
+        @NotBlank String name
 ) {
 }
