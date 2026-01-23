@@ -7,11 +7,11 @@ import com.shivamdenge.NeonAi.dto.member.UpdateMemberRoleRequestDTO;
 import java.util.List;
 
 public interface ProjectMemberService {
-    List<MemberResponseDTo> getProjectMembers(Long projectId, Long userId);
+    List<MemberResponseDTo> getProjectMembers(Long projectId);
 
-    MemberResponseDTo inviteMember(Long projectId, InviteMemberRequestDTO request, Long userId);
+    MemberResponseDTo inviteMember(Long projectId, InviteMemberRequestDTO request);
 
-    MemberResponseDTo updateMemberRole(Long projectId, Long memberId, UpdateMemberRoleRequestDTO request, Long userId);
+    MemberResponseDTo updateMemberRole(Long projectId, Long memberId, UpdateMemberRoleRequestDTO request);
 
-    void removeProjectMember(Long projectId, Long memberId, Long userId);
+    void removeProjectMember(Long projectId, Long memberId);
 }

@@ -12,6 +12,7 @@ import com.shivamdenge.NeonAi.mapper.ProjectMemberMapper;
 import com.shivamdenge.NeonAi.repository.ProjectMemberRepository;
 import com.shivamdenge.NeonAi.repository.ProjectRepository;
 import com.shivamdenge.NeonAi.repository.UserRepository;
+import com.shivamdenge.NeonAi.security.AuthUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,47 +27,53 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final ProjectMemberMapper projectMemberMapper;
-
+    private final AuthUtil authUtil;
 
     @Override
-    public List<MemberResponseDTo> getProjectMembers(Long projectId, Long userId) {
+    public List<MemberResponseDTo> getProjectMembers(Long projectId) {
+        Long userId = authUtil.getCurrentUserId();
         Project project = getAccessibleProjectById(projectId, userId);
 
-        return projectMemberRepository.findByIdProjectId(projectId).stream()
-                .map(projectMemberMapper::toProjectMemberResponseFromMember).toList();
+        return projectMemberRepository.findByIdProjectId(projectId)
+                .stream()
+                .map(projectMemberMapper::toProjectMemberResponseFromMember)
+                .toList();
     }
 
     @Override
-    public MemberResponseDTo inviteMember(Long projectId, InviteMemberRequestDTO request, Long userId) {
-
+    public MemberResponseDTo inviteMember(Long projectId, InviteMemberRequestDTO request) {
+        Long userId = authUtil.getCurrentUserId();
         Project project = getAccessibleProjectById(projectId, userId);
-
 
         User invitee = userRepository.findByUsername(request.username()).orElseThrow();
 
-        if (invitee.getId().equals(userId)) {
+        if(invitee.getId().equals(userId)) {
             throw new RuntimeException("Cannot invite yourself");
         }
 
         ProjectMemberId projectMemberId = new ProjectMemberId(projectId, invitee.getId());
 
-        if (projectMemberRepository.existsById(projectMemberId)) {
-            throw new RuntimeException("you cannot invite once again");
+        if(projectMemberRepository.existsById(projectMemberId)) {
+            throw new RuntimeException("Cannot invite once again");
         }
 
-        ProjectMember projectMember = ProjectMember.builder().id(projectMemberId).project(project).user(invitee).projectRole(request.role()).invitedAt(Instant.now()).build();
+        ProjectMember member = ProjectMember.builder()
+                .id(projectMemberId)
+                .project(project)
+                .user(invitee)
+                .projectRole(request.role())
+                .invitedAt(Instant.now())
+                .build();
 
-        projectMemberRepository.save(projectMember);
+        projectMemberRepository.save(member);
 
-        return projectMemberMapper.toProjectMemberResponseFromMember(projectMember);
+        return projectMemberMapper.toProjectMemberResponseFromMember(member);
     }
 
     @Override
-    public MemberResponseDTo updateMemberRole(Long projectId, Long memberId, UpdateMemberRoleRequestDTO request, Long userId) {
-
+    public MemberResponseDTo updateMemberRole(Long projectId, Long memberId, UpdateMemberRoleRequestDTO request) {
+        Long userId = authUtil.getCurrentUserId();
         Project project = getAccessibleProjectById(projectId, userId);
-
-
 
         ProjectMemberId projectMemberId = new ProjectMemberId(projectId, memberId);
         ProjectMember projectMember = projectMemberRepository.findById(projectMemberId).orElseThrow();
@@ -76,27 +83,24 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
         projectMemberRepository.save(projectMember);
 
         return projectMemberMapper.toProjectMemberResponseFromMember(projectMember);
-
     }
 
     @Override
-    public void removeProjectMember(Long projectId, Long memberId, Long userId) {
-
+    public void removeProjectMember(Long projectId, Long memberId) {
+        Long userId = authUtil.getCurrentUserId();
         Project project = getAccessibleProjectById(projectId, userId);
 
-
         ProjectMemberId projectMemberId = new ProjectMemberId(projectId, memberId);
-
-        if (!projectMemberRepository.existsById(projectMemberId)) {
-            throw new RuntimeException("Member Not Exist");
+        if(!projectMemberRepository.existsById(projectMemberId)) {
+            throw new RuntimeException("Member not found in project");
         }
 
         projectMemberRepository.deleteById(projectMemberId);
     }
 
-    /// INTERNAL FUNCTION
+    ///  INTERNAL FUNCTIONS
 
     public Project getAccessibleProjectById(Long projectId, Long userId) {
-        return projectRepository.findAccessibleByProjectId(projectId, userId).orElseThrow();
+        return projectRepository.findAccessibleProjectById(projectId, userId).orElseThrow();
     }
 }

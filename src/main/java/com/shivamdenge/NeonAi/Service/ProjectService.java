@@ -7,14 +7,14 @@ import com.shivamdenge.NeonAi.dto.project.ProjectSummaryResponseDTO;
 import java.util.List;
 
 public interface ProjectService {
-    List<ProjectSummaryResponseDTO> getUserProjects(Long userId);
+    List<ProjectSummaryResponseDTO> getUserProjects();
 
-    ProjectResponseDTO getUserProjectById(Long id, Long userId);
+    ProjectResponseDTO getUserProjectById(Long id);
 
-    ProjectResponseDTO createProject(Long userId, ProjectRequestDTO requestDTO);
+    ProjectResponseDTO createProject(ProjectRequestDTO request);
 
-    ProjectResponseDTO updateProject(Long id, Long userId, ProjectRequestDTO requestDTO);
+    ProjectResponseDTO updateProject(Long id, ProjectRequestDTO request);
 
-    void softDelete(Long id, Long userId);
+    void softDelete(Long id);
 }
 

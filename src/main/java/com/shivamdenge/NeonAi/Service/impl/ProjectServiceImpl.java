@@ -14,39 +14,50 @@ import com.shivamdenge.NeonAi.mapper.ProjectMapper;
 import com.shivamdenge.NeonAi.repository.ProjectMemberRepository;
 import com.shivamdenge.NeonAi.repository.ProjectRepository;
 import com.shivamdenge.NeonAi.repository.UserRepository;
+import com.shivamdenge.NeonAi.security.AuthUtil;
 import jakarta.transaction.Transactional;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
 
+
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Transactional
 public class ProjectServiceImpl implements ProjectService {
 
-    private final ProjectRepository projectRepository;
-    private final UserRepository userRepository;
-    private final ProjectMapper mapper;
-    private final ProjectMemberRepository projectMemberRepository;
-
+    ProjectRepository projectRepository;
+    UserRepository userRepository;
+    ProjectMapper projectMapper;
+    ProjectMemberRepository projectMemberRepository;
+    AuthUtil authUtil;
 
     @Override
-    public ProjectResponseDTO createProject(Long userId, ProjectRequestDTO requestDTO) {
+    public ProjectResponseDTO createProject(ProjectRequestDTO request) {
+        Long userId = authUtil.getCurrentUserId();
+        /// This Line will fetch entire user that we dont need as below .user(owner) here we only need owner
 
-        User owner = userRepository.findById(userId).orElseThrow(
-                () -> new ResourceNotFoundException("User", userId.toString())
-        );
+       /* User owner = userRepository.findById(userId).orElseThrow(
+            () -> new ResourceNotFoundException("User", userId.toString())
+      );*/
+
+        /// Instead of above we can use this  will not make Any db call it only store data in dummy table
+        User owner = userRepository.getReferenceById(userId);
 
         Project project = Project.builder()
-                .name(requestDTO.name())
-                .isPublic(false).build();
-
+                .name(request.name())
+                .isPublic(false)
+                .build();
         project = projectRepository.save(project);
 
-        ProjectMemberId projectMemberId = new ProjectMemberId(project.getId(),owner.getId());
-        ProjectMember projectMember  = ProjectMember.builder()
+
+        ProjectMemberId projectMemberId = new ProjectMemberId(project.getId(), owner.getId());
+        ProjectMember projectMember = ProjectMember.builder()
                 .id(projectMemberId)
                 .projectRole(ProjectRole.OWNER)
                 .user(owner)
@@ -54,58 +65,56 @@ public class ProjectServiceImpl implements ProjectService {
                 .invitedAt(Instant.now())
                 .project(project)
                 .build();
-
         projectMemberRepository.save(projectMember);
 
-
-        return mapper.toProjectResponseDTO(project);
+        return projectMapper.toProjectResponseDTO(project);
     }
 
     @Override
-    public List<ProjectSummaryResponseDTO> getUserProjects(Long userId) {
+    public List<ProjectSummaryResponseDTO> getUserProjects() {
+        Long userId = authUtil.getCurrentUserId();
 
-            /* This is One Way to get Project And Below Is Second
+         /* This is One Way to get Project And Below Is Second
                 return projectRepository.findAllAccessibleByUser(userId).stream()
                 .map(project -> mapper.toProjectSummaryResponseDTO(project))
                 .collect(Collectors.toList());
             */
 
-        return mapper.toListOfProjectSummaryResponseDTO(projectRepository.findAllAccessibleByUser(userId));
+        var projects = projectRepository.findAllAccessibleByUser(userId);
+        return projectMapper.toListOfProjectSummaryResponseDTO(projects);
     }
 
     @Override
-    public ProjectResponseDTO getUserProjectById(Long id, Long userId) {
-        Project project = getAccessibleByProjectId(id, userId);
-        return mapper.toProjectResponseDTO(project);
+    public ProjectResponseDTO getUserProjectById(Long id) {
+        Long userId = authUtil.getCurrentUserId();
+        Project project = getAccessibleProjectById(id, userId);
+        return projectMapper.toProjectResponseDTO(project);
     }
 
     @Override
-    public ProjectResponseDTO updateProject(Long id, Long userId, ProjectRequestDTO requestDTO) {
-        Project project = getAccessibleByProjectId(id, userId);
+    public ProjectResponseDTO updateProject(Long id, ProjectRequestDTO request) {
+        Long userId = authUtil.getCurrentUserId();
+        Project project = getAccessibleProjectById(id, userId);
 
-
-
-        project.setName(requestDTO.name());
+        project.setName(request.name());
         project = projectRepository.save(project);
 
-        return mapper.toProjectResponseDTO(project);
+        return projectMapper.toProjectResponseDTO(project);
     }
 
     @Override
-    public void softDelete(Long id, Long userId) {
-        Project project = getAccessibleByProjectId(id, userId);
-
-
+    public void softDelete(Long id) {
+        Long userId = authUtil.getCurrentUserId();
+        Project project = getAccessibleProjectById(id, userId);
 
         project.setDeletedAt(Instant.now());
         projectRepository.save(project);
-
     }
 
-    /// INTERNAL FUNCTION
+    ///  INTERNAL FUNCTION
 
-    public Project getAccessibleByProjectId(Long projectId, Long userId) {
-        return projectRepository.findAccessibleByProjectId(projectId, userId)
+    public Project getAccessibleProjectById(Long projectId, Long userId) {
+        return projectRepository.findAccessibleProjectById(projectId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Project", projectId.toString()));
     }
 }
