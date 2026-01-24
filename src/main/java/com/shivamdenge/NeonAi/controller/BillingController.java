@@ -20,8 +20,6 @@ public class BillingController {
     @GetMapping("/api/plans")
     public ResponseEntity<List<PlanResponseDTO>> getAllPlans() {
         return ResponseEntity.ok(planService.getAllActivePlans());
-
-
     }
 
     @GetMapping("/api/me/subscription")
