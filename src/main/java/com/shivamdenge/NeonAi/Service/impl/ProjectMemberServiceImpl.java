@@ -14,13 +14,16 @@ import com.shivamdenge.NeonAi.repository.ProjectRepository;
 import com.shivamdenge.NeonAi.repository.UserRepository;
 import com.shivamdenge.NeonAi.security.AuthUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import jakarta.transaction.Transactional;
 
 import java.time.Instant;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ProjectMemberServiceImpl implements ProjectMemberService {
 
     private final ProjectMemberRepository projectMemberRepository;
@@ -30,6 +33,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     private final AuthUtil authUtil;
 
     @Override
+    @PreAuthorize("@security.canViewMembers(#projectId)")
     public List<MemberResponseDTo> getProjectMembers(Long projectId) {
         Long userId = authUtil.getCurrentUserId();
         Project project = getAccessibleProjectById(projectId, userId);
@@ -41,6 +45,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     }
 
     @Override
+    @PreAuthorize("@security.canManageMembers(#projectId)")
     public MemberResponseDTo inviteMember(Long projectId, InviteMemberRequestDTO request) {
         Long userId = authUtil.getCurrentUserId();
         Project project = getAccessibleProjectById(projectId, userId);
@@ -71,6 +76,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     }
 
     @Override
+    @PreAuthorize("@security.canManageMembers(#projectId)")
     public MemberResponseDTo updateMemberRole(Long projectId, Long memberId, UpdateMemberRoleRequestDTO request) {
         Long userId = authUtil.getCurrentUserId();
         Project project = getAccessibleProjectById(projectId, userId);
@@ -86,6 +92,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     }
 
     @Override
+    @PreAuthorize("@security.canManageMembers(#projectId)")
     public void removeProjectMember(Long projectId, Long memberId) {
         Long userId = authUtil.getCurrentUserId();
         Project project = getAccessibleProjectById(projectId, userId);

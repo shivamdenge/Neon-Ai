@@ -1,0 +1,47 @@
+package com.shivamdenge.NeonAi.security;
+
+import com.shivamdenge.NeonAi.enums.ProjectPermission;
+import com.shivamdenge.NeonAi.enums.ProjectRole;
+import com.shivamdenge.NeonAi.repository.ProjectMemberRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+@Component("security")
+@RequiredArgsConstructor
+public class SecurityExpressions {
+
+    private final ProjectMemberRepository projectMemberRepository;
+    private final AuthUtil authUtil;
+
+    private Boolean hasPermission(Long projectId, ProjectPermission projectPermission) {
+        Long userId = authUtil.getCurrentUserId();
+
+        return projectMemberRepository.findRoleByProjectIdAndUserId(userId, projectId)
+                .map(role -> role.getPermissions().contains(projectPermission))
+                .orElse(false);
+    }
+
+
+    public boolean canViewProject(Long projectId) {
+        return hasPermission(projectId, ProjectPermission.VIEW);
+    }
+
+    public boolean canEditProject(Long projectId) {
+        return hasPermission(projectId, ProjectPermission.EDIT);
+    }
+
+    public boolean canDeleteProject(Long projectId) {
+        return hasPermission(projectId, ProjectPermission.DELETE);
+    }
+
+    public boolean canViewMembers(Long projectId) {
+        return hasPermission(projectId, ProjectPermission.VIEW_MEMBERS);
+    }
+
+    public boolean canManageMembers(Long projectId) {
+        return hasPermission(projectId, ProjectPermission.MANAGE_MEMBERS);
+    }
+
+
+
+}
