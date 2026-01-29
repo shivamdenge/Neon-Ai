@@ -18,13 +18,13 @@ spring:
         format_sql: true
 
 jwt:
-  secret-key: ${JWT-SECRET-KEY}
+  secret-key: as9b7aodlbjfkluosfd789ujeklfnlsduf90b8ha908w74tuqijvlckajdl
 
 stripe:
   api:
-    secret: ${STRIPE_SECRET_KEY}
+    secret: sk_test_51SthHsJGEVWtB7VxwH6hZZJf5ty2TEURnFSqMarRe2l9gGvXOQdzgxt3tK8cLwwDkPmrdvFxEHHnfZYXAIsyDg7T007zhhs1r7
   webhook:
-    secret: ${WEBHOOK_SECRET_KEY}
+    secret: whsec_ad27b04ed240526a459e0a63865a51e46c4e895682651d12bd7b9c69389a9fc2
 
 client:
   url: http://localhost:8080
