@@ -1,14 +1,22 @@
 package com.shivamdenge.NeonAi.Service;
 
-import com.shivamdenge.NeonAi.dto.subscription.CheckoutRequestDTO;
-import com.shivamdenge.NeonAi.dto.subscription.CheckoutResponseDTO;
-import com.shivamdenge.NeonAi.dto.subscription.PortalResponseDTO;
 import com.shivamdenge.NeonAi.dto.subscription.SubscriptionResponseDTO;
+import com.shivamdenge.NeonAi.enums.SubscriptionStatus;
+
+import java.time.Instant;
 
 public interface SubscriptionService {
-    CheckoutResponseDTO createCheckoutSessionUrlD(CheckoutRequestDTO request, Long userId);
+    SubscriptionResponseDTO getCurrentSubscription();
 
-    SubscriptionResponseDTO getCurrentSubscription(Long userId);
+    void activateSubscription(Long userId, Long planId, String subscriptionId, String customerId);
 
-    PortalResponseDTO openCustomerPortal(Long userId);
+    void updateSubscription(String gatewaySubscriptionId, SubscriptionStatus status, Instant periodStart, Instant periodEnd, Boolean cancelAtPeriodEnd, Long planId);
+
+    void cancelSubscription(String gatewaySubscriptionId);
+
+    void renewSubscriptionPeriod(String subId, Instant periodStart, Instant periodEnd);
+
+    void markSubscriptionPastDue(String subId);
+
+    boolean canCreateNewProject();
 }

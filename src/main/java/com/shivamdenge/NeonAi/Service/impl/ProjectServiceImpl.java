@@ -1,6 +1,7 @@
 package com.shivamdenge.NeonAi.Service.impl;
 
 import com.shivamdenge.NeonAi.Service.ProjectService;
+import com.shivamdenge.NeonAi.Service.SubscriptionService;
 import com.shivamdenge.NeonAi.dto.project.ProjectRequestDTO;
 import com.shivamdenge.NeonAi.dto.project.ProjectResponseDTO;
 import com.shivamdenge.NeonAi.dto.project.ProjectSummaryResponseDTO;
@@ -9,6 +10,7 @@ import com.shivamdenge.NeonAi.entity.ProjectMember;
 import com.shivamdenge.NeonAi.entity.ProjectMemberId;
 import com.shivamdenge.NeonAi.entity.User;
 import com.shivamdenge.NeonAi.enums.ProjectRole;
+import com.shivamdenge.NeonAi.error.BadRequestException;
 import com.shivamdenge.NeonAi.error.ResourceNotFoundException;
 import com.shivamdenge.NeonAi.mapper.ProjectMapper;
 import com.shivamdenge.NeonAi.repository.ProjectMemberRepository;
@@ -37,11 +39,17 @@ public class ProjectServiceImpl implements ProjectService {
     ProjectMapper projectMapper;
     ProjectMemberRepository projectMemberRepository;
     AuthUtil authUtil;
+    SubscriptionService subscriptionService;
 
     @Override
     public ProjectResponseDTO createProject(ProjectRequestDTO request) {
+
+        if(!subscriptionService.canCreateNewProject()) {
+            throw new BadRequestException("User cannot create a New project with current Plan, Upgrade plan now.");
+        }
+
         Long userId = authUtil.getCurrentUserId();
-        /// This Line will fetch entire user that we dont need as below .user(owner) here we only need owner
+        /// This Line will fetch entire user that we don't need as below .user(owner) here we only need owner
 
        /* User owner = userRepository.findById(userId).orElseThrow(
             () -> new ResourceNotFoundException("User", userId.toString())
@@ -55,7 +63,6 @@ public class ProjectServiceImpl implements ProjectService {
                 .isPublic(false)
                 .build();
         project = projectRepository.save(project);
-
 
         ProjectMemberId projectMemberId = new ProjectMemberId(project.getId(), owner.getId());
         ProjectMember projectMember = ProjectMember.builder()
@@ -115,7 +122,7 @@ public class ProjectServiceImpl implements ProjectService {
         projectRepository.save(project);
     }
 
-    ///  INTERNAL FUNCTION
+    ///  INTERNAL FUNCTIONS
 
     public Project getAccessibleProjectById(Long projectId, Long userId) {
         return projectRepository.findAccessibleProjectById(projectId, userId)
