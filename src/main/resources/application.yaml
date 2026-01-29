@@ -18,7 +18,7 @@ spring:
         format_sql: true
 
 jwt:
-  secret-key: ${JWT-KEY}
+  secret-key: ${JWT-SECRET-KEY}
 
 stripe:
   api:
