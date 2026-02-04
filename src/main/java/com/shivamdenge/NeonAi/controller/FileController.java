@@ -1,6 +1,6 @@
 package com.shivamdenge.NeonAi.controller;
 
-import com.shivamdenge.NeonAi.Service.FileService;
+import com.shivamdenge.NeonAi.Service.ProjectFileService;
 import com.shivamdenge.NeonAi.dto.project.FileContentResponseDTO;
 import com.shivamdenge.NeonAi.dto.project.FileNodeDTO;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +17,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FileController {
 
-    private final FileService fileService;
+    private final ProjectFileService projectFileService;
 
     public ResponseEntity<List<FileNodeDTO>> getFileTree(@PathVariable Long projectId) {
         Long userId = 1L;
-        return ResponseEntity.ok(fileService.getFileTree(userId, projectId));
+        return ResponseEntity.ok(projectFileService.getFileTree(userId, projectId));
     }
 
     @GetMapping("/{*path}")
@@ -30,7 +30,7 @@ public class FileController {
             @PathVariable String path
     ) {
         Long userId = 1L;
-        return ResponseEntity.ok(fileService.getFileContent(projectId, path, userId));
+        return ResponseEntity.ok(projectFileService.getFileContent(projectId, path, userId));
     }
 }
 
