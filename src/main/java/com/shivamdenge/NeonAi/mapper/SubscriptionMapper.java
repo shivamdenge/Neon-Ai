@@ -5,7 +5,6 @@ import com.shivamdenge.NeonAi.dto.subscription.SubscriptionResponseDTO;
 import com.shivamdenge.NeonAi.entity.Plan;
 import com.shivamdenge.NeonAi.entity.Subscription;
 import org.mapstruct.Mapper;
-import org.springframework.stereotype.Component;
 
 @Mapper(componentModel = "spring")
 public interface SubscriptionMapper {
