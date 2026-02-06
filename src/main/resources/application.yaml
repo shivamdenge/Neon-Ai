@@ -1,11 +1,12 @@
 spring:
   application:
-    name: NeonAi
+    name: Neon-Ai
+    description: this is application
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/lovableDB
-    username: postgres
-    password: 960494
+    url: jdbc:postgresql://localhost:9010/pgvector-test
+    username: user
+    password: password
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -16,6 +17,23 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
+
+  ai:
+    openai:
+      api-key: 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
+      base-url: https://openrouter.ai/api
+      chat:
+        options:
+          model: x-ai/grok-code-fast-1
+          temperature: 0.0
+
+#  ai:
+#    open-ai:
+#      api-key: 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
+#      chat:
+#        options:
+#          temperature: 0.0
+#          model: gpt-5.2-codex
 
 jwt:
   secret-key: as9b7aodlbjfkluosfd789ujeklfnlsduf90b8ha908w74tuqijvlckajdl
@@ -28,3 +46,14 @@ stripe:
 
 client:
   url: http://localhost:8080
+
+logging:
+  level:
+    org.springframework.ai:
+      chat.client: DEBUG
+
+minio:
+  url: http://localhost:9000          # or minio:9000 if inside docker network
+  access-key: minioadmin
+  secret-key: minioadmin123
+  project-bucket: projects
