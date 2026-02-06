@@ -40,6 +40,7 @@ public class ProjectServiceImpl implements ProjectService {
     ProjectMemberRepository projectMemberRepository;
     AuthUtil authUtil;
     SubscriptionService subscriptionService;
+    ProjectTemplateServiceImpl projectTemplateService;
 
     @Override
     public ProjectResponseDTO createProject(ProjectRequestDTO request) {
@@ -75,6 +76,7 @@ public class ProjectServiceImpl implements ProjectService {
                 .build();
         projectMemberRepository.save(projectMember);
 
+        projectTemplateService.initializeProjectFromTemplate(project.getId());
         return projectMapper.toProjectResponseDTO(project);
     }
 
