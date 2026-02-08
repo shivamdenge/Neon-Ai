@@ -25,7 +25,7 @@ public class ProjectController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProjectResponseDTO> getProjectById(@PathVariable Long id) {
+    public ResponseEntity<ProjectSummaryResponseDTO> getProjectById(@PathVariable Long id) {
         return ResponseEntity.ok(projectService.getUserProjectById(id));
     }
 

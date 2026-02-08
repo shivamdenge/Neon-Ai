@@ -45,7 +45,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectResponseDTO createProject(ProjectRequestDTO request) {
 
-        if(!subscriptionService.canCreateNewProject()) {
+        if (!subscriptionService.canCreateNewProject()) {
             throw new BadRequestException("User cannot create a New project with current Plan, Upgrade plan now.");
         }
 
@@ -90,16 +90,21 @@ public class ProjectServiceImpl implements ProjectService {
                 .collect(Collectors.toList());
             */
 
-        var projects = projectRepository.findAllAccessibleByUser(userId);
-        return projectMapper.toListOfProjectSummaryResponseDTO(projects);
+        var projectsWithRoles = projectRepository.findAllAccessibleByUser(userId);
+        return projectsWithRoles.stream()
+                .map(p -> projectMapper.toProjectSummaryResponseDTO(p.getProject(), p.getRole()))
+                .toList();
     }
 
     @Override
     @PreAuthorize("@security.canViewProject(#projectId)")
-    public ProjectResponseDTO getUserProjectById(Long projectId) {
+    public ProjectSummaryResponseDTO getUserProjectById(Long projectId) {
         Long userId = authUtil.getCurrentUserId();
-        Project project = getAccessibleProjectById(projectId, userId);
-        return projectMapper.toProjectResponseDTO(project);
+
+        var projectWithRole = projectRepository.findAccessibleProjectByIdWithRole(projectId, userId)
+                .orElseThrow(() -> new BadRequestException("Project Not Found"));
+
+        return projectMapper.toProjectSummaryResponseDTO(projectWithRole.getProject(), projectWithRole.getRole());
     }
 
     @Override

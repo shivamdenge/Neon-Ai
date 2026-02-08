@@ -1,11 +1,14 @@
 package com.shivamdenge.NeonAi.dto.project;
 
+import com.shivamdenge.NeonAi.enums.ProjectRole;
+
 import java.time.Instant;
 
 public record ProjectSummaryResponseDTO(
         Long id,
-        String projectName,
+        String name,
         Instant createdAt,
-        Instant updatedAt
+        Instant updatedAt,
+        ProjectRole role
 ) {
 }

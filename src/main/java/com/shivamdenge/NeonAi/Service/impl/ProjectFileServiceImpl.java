@@ -3,6 +3,7 @@ package com.shivamdenge.NeonAi.Service.impl;
 import com.shivamdenge.NeonAi.Service.ProjectFileService;
 import com.shivamdenge.NeonAi.dto.project.FileContentResponseDTO;
 import com.shivamdenge.NeonAi.dto.project.FileNodeDTO;
+import com.shivamdenge.NeonAi.dto.project.FileTreeResponse;
 import com.shivamdenge.NeonAi.entity.Project;
 import com.shivamdenge.NeonAi.entity.ProjectFile;
 import com.shivamdenge.NeonAi.error.ResourceNotFoundException;
@@ -41,9 +42,11 @@ public class ProjectFileServiceImpl implements ProjectFileService {
 
 
     @Override
-    public List<FileNodeDTO> getFileTree(Long projectId) {
+    public FileTreeResponse getFileTree(Long projectId) {
         List<ProjectFile> projectFileList = projectFileRepository.findByProjectId(projectId);
-        return projectFileMapper.toListOfFileNode(projectFileList);
+        List<FileNodeDTO> projectFileNode =projectFileMapper.toListOfFileNode(projectFileList);
+
+        return new FileTreeResponse(projectFileNode);
     }
 
     @Override

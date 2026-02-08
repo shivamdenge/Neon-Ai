@@ -18,22 +18,23 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
 
+#  ai:
+#    anthropic:
+#      api-key: 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
+#      #base-url: https://openrouter.ai/api
+#      chat:
+#        options:
+#          model: claude-sonnet-4-5-20250929
+#          temperature: 0.0
+
   ai:
-    openai:
-      api-key: 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
+    open-ai:
+      api-key: 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
       base-url: https://openrouter.ai/api
       chat:
         options:
-          model: x-ai/grok-code-fast-1
           temperature: 0.0
-
-#  ai:
-#    open-ai:
-#      api-key: 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
-#      chat:
-#        options:
-#          temperature: 0.0
-#          model: gpt-5.2-codex
+          model: upstage/solar-pro-3:free
 
 jwt:
   secret-key: as9b7aodlbjfkluosfd789ujeklfnlsduf90b8ha908w74tuqijvlckajdl

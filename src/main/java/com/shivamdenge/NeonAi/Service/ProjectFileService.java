@@ -1,12 +1,10 @@
 package com.shivamdenge.NeonAi.Service;
 
 import com.shivamdenge.NeonAi.dto.project.FileContentResponseDTO;
-import com.shivamdenge.NeonAi.dto.project.FileNodeDTO;
-
-import java.util.List;
+import com.shivamdenge.NeonAi.dto.project.FileTreeResponse;
 
 public interface ProjectFileService {
-    List<FileNodeDTO> getFileTree(Long projectId);
+    FileTreeResponse getFileTree(Long projectId);
 
     FileContentResponseDTO getFileContent(Long projectId, String path);
 

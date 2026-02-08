@@ -3,34 +3,30 @@ package com.shivamdenge.NeonAi.controller;
 import com.shivamdenge.NeonAi.Service.ProjectFileService;
 import com.shivamdenge.NeonAi.dto.project.FileContentResponseDTO;
 import com.shivamdenge.NeonAi.dto.project.FileNodeDTO;
+import com.shivamdenge.NeonAi.dto.project.FileTreeResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/projects/{id}/files")
 @RequiredArgsConstructor
+@RequestMapping("/api/projects/{projectId}/files")
 public class FileController {
 
     private final ProjectFileService projectFileService;
 
     @GetMapping
-    public ResponseEntity<List<FileNodeDTO>> getFileTree(@PathVariable Long projectId) {
+    public ResponseEntity<FileTreeResponse> getFileTree(@PathVariable Long projectId) {
         return ResponseEntity.ok(projectFileService.getFileTree(projectId));
     }
 
-    @GetMapping("/{*path}")
+    @GetMapping("/content")
     public ResponseEntity<FileContentResponseDTO> getFile(
             @PathVariable Long projectId,
-            @PathVariable String path
-    ) {
-
+            @RequestParam String path) {
         return ResponseEntity.ok(projectFileService.getFileContent(projectId, path));
     }
-}
 
+}

@@ -8,7 +8,7 @@ public record MemberResponseDTo(
         Long userId,
         String username,
         String name,
-        ProjectRole projectRole,
+        ProjectRole role,
         Instant invitedAt
 ) {
 }
